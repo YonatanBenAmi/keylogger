@@ -120,7 +120,7 @@ def main():
     listener_thread, writer_thread = klm.run()
 
 
-    time.sleep(30)
+    time.sleep(5)
     klm.stop()
 
 
