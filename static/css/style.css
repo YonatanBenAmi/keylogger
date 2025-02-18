@@ -1,0 +1,315 @@
+
+.rubik-iso-regular {
+  font-family: "Rubik Iso", serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #39ff14;
+  text-align: center;
+}
+:root {
+    --neon-red: #ff1414;
+    --neon-blue: #00f3ff;
+    --neon-green: #39ff14;
+    --cyber-purple: #b537f2;
+    --cyber-pink: #ff3399;
+    --cyber-dark: #0a0b1e;
+    --cyber-yellow: #f7d794;
+  }
+#animation{
+  position: absolute;
+  visibility: hidden;
+  top: 10px;
+}
+@keyframes glitch {
+0% {
+    clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%);
+    transform: translate(2px);
+}
+20% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%);
+    transform: translate(-2px);
+}
+40% {
+    clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+    transform: translate(1px);
+}
+60% {
+    clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%);
+    transform: translate(-1px);
+}
+80% {
+    clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%);
+    transform: translate(3px);
+}
+100% {
+    clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%);
+    transform: translate(0);
+}
+}
+  
+body {
+    background: var(--cyber-dark);
+    color: #fff;
+    position: relative;
+    overflow-x: hidden;
+    user-select: none;
+
+  }
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 243, 255, 0.03) 0px,
+      rgba(0, 243, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+    z-index: 10;
+}
+.flex{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+.relative{
+  position: relative;
+}
+.cyber-card {
+    padding: 30px 30px;
+    max-height: 200px;
+    background: rgba(10, 11, 30, 0.8);
+    border: 1px solid var(--neon-blue);
+    border-radius: 20px;
+    box-shadow: 0 0 10px var(--neon-blue);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+  
+.cyber-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 243, 255, 0.2),
+      transparent
+    );
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    to {
+      left: 100%;
+    }
+  }
+  
+.cyber-card:hover {
+    box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-green);
+    transform: translateY(-2px) scale(1.01);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cyber-text-glow {
+    text-shadow: 0 0 10px var(--neon-blue);
+    animation: pulse 2s infinite;
+}
+.cyber-border {
+    position: relative;
+  }
+  
+  .cyber-border::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid var(--neon-blue);
+    clip-path: polygon(0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px));
+    pointer-events: none;
+    animation: borderPulse 4s infinite;
+  }
+  
+  @keyframes borderPulse {
+    0%, 100% {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 10px var(--neon-blue);
+    }
+    50% {
+      border-color: var(--neon-green);
+      box-shadow: 0 0 20px var(--neon-green);
+    }
+  }
+  
+  .loading-animation {
+    position: relative;
+  }
+  
+  .loading-animation::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+    animation: scanline 2s linear infinite;
+}
+.cyber-button {
+    background: transparent;
+    cursor: pointer;
+    width: 15%;
+
+    border: 1px solid var(--neon-green);
+    border-radius: 20px;
+    color: var(--neon-green);
+    padding: 0.5rem ;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .cyber-button:hover {
+    background: var(--neon-green);
+    color: var(--cyber-dark);
+    box-shadow: 0 0 20px var(--neon-green);
+  }
+  
+  .cyber-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(57, 255, 20, 0.4),
+      transparent
+    );
+    transition: 0.5s;
+  }
+  
+  .cyber-button:hover::before {
+    left: 100%;
+}
+.cyber-button:active {
+  transform: translateY(5px) scale(0.85);
+  box-shadow: 0 0 10px var(--neon-blue), 0 0 16px var(--neon-green);
+}
+
+.search-card{
+  width: 80%;
+  height: 30px;
+}
+.input-search{
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  border-radius: 20px;
+  padding: 0px 10px;
+  font-size: medium;
+  color: #39ff14;
+  background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 243, 255, 0.03) 0px,
+      rgba(0, 243, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+}
+.container{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.half{
+  width: 50%;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #39ff14;
+}
+#result{
+  font-size: 2.5rem;
+}
+
+.sircle-card{
+  width: 165px;
+  height: 165px;
+  cursor: pointer;
+  top: 0px;
+  padding: 30px 30px;
+    background: rgba(10, 11, 30, 0.8);
+    border: 1px solid var(--neon-blue);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--neon-blue);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+.sircle-card::before{
+  content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--shine-color),
+      transparent
+    
+  );
+    animation: shine 3s infinite;
+}
+.sircle-card:hover {
+  box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-green);
+  transform: translateY(-2px) scale(1.01);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.sircle-card:active {
+  transform: translateY(2px) scale(0.92);
+  box-shadow: 0 0 8px var(--neon-blue), 0 0 16px var(--neon-green);
+}
+
+
+.center{
+  justify-content: center;
+  margin-top: 20px;
+}
+
+
+.sircle-card h1{
+  color: #39ff14;
+}
+@keyframes shine {
+  to {
+    left: 100%;
+  }
+}
+.selection{
+  color: var(--neon-green);
+}
