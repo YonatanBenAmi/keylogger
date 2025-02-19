@@ -10,6 +10,18 @@ BASE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 def index():
     return render_template('index.html')
 
+@app.route('/<computer>', methods=['GET'])
+def get_computer_days(computer):
+    computer_path = os.path.join(BASE_PATH, computer)
+    if not os.path.exists(computer_path) or not os.path.isdir(computer_path):
+        abort(404, description="Computer not found")
+    try:
+        # מקבל את רשימת כל התיקיות (הימים) בתיקיית המחשב
+        days = [d for d in os.listdir(computer_path) if os.path.isdir(os.path.join(computer_path, d))]
+    except Exception as e:
+        abort(500, description=f"Error reading computer directory: {e}")
+    return jsonify({"days": days})
+
 @app.route('/<computer>/<day>', methods=['GET'])
 def get_day_data(computer, day):
     file_path = os.path.join(BASE_PATH, computer, day, 'data.json')
