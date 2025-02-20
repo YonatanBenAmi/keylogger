@@ -11,7 +11,6 @@
     href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Inter:wght@700&family=Josefin+Sans:wght@200&family=Poppins:wght@100&family=Rubik+Iso&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
-
 </head>
 
 <body>
@@ -27,11 +26,11 @@
       <div class="search-card">
         <input id="inp" class="input-search" name="search" placeholder="Type your text" />
       </div>
-      <button id="btn" onclick="myFunc()" class="cyber-button">search</button>
+      <button id="btn" onclick="handleSearch()" class="cyber-button">search</button>
     </div>
     
     <div id="result-data" class="block cyber-card cyber-border">
-      <button class="close-button">×</button>
+      <button class="close-button" onclick="hideModal()">×</button>
       <div class="content"></div>
     </div>
     <div class="flex">
@@ -47,7 +46,7 @@
   </div>
 
   <div class="flex">
-    <form class="selection cyber-card cyber-border flex" action="" onsubmit="fetchDataFromForm(event)">
+    <form class="selection cyber-card cyber-border flex" action="" onsubmit="handleFormSubmit(event)">
       <div>
         <label>בחר מחשב:</label>
         <select class="selection flex" id="computer">
@@ -60,7 +59,7 @@
         <input type="date" id="date">
       </div>
       
-      <button type="submit" class="show-button">טען נתונים</button>
+      <button type="submit"  class="show-button" onclick="showModal()">טען נתונים</button>
     </form>
 
     <div id="stop-btn" class="flex center">
@@ -69,10 +68,6 @@
       </button>
     </div>
   </div>
-
-
-
-
 
   <script src="/static/js/index.js"></script>
 </body>

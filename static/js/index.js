@@ -1,45 +1,23 @@
-// async function myFunc() {
-//     // בניית ה-URL
-//     const url = `/${document.getElementById("computer").value}/${document.getElementById("date").value}`;
-//     const str = document.getElementById("inp").value;
-    
-//     try {
-//         // קריאה לשרת וקבלת ה-JSON
-//         const response = await fetch(url);
-//         const jsonData = await response.json();
-        
-//         // ספירת המחרוזת ב-JSON
-//         const count = countStringInJSON(jsonData, str);
-        
-//         // עדכון התוצאה
-//         document.getElementById("result").innerHTML = count;
-//     } catch (error) {
-//         console.error('שגיאה בקריאת הנתונים:', error);
-//         document.getElementById("result").innerHTML = "שגיאה בטעינת הנתונים";
-//     }
-// }
+// קבועים גלובליים
+const API_BASE_URL = 'http://127.0.0.1:5000/api';
+const ELEMENTS = {
+    computer: document.getElementById("computer"),
+    searchInput: document.getElementById("inp"),
+    result: document.getElementById("result"),
+    resultData: document.getElementById("result-data"),
+    date: document.getElementById("date"),
+    follower: document.getElementById("Follo"),
+    startButton: document.getElementById("start"),
+    startButtonText: document.getElementById("text-start-button"),
+    circle: document.querySelector(".sircle-card"),
+    animation: document.getElementById("animation"),
+    modalButton: document.querySelector('.show-button'),
+    modalBlock: document.querySelector('.block'),
+    modalOverlay: document.querySelector('.overlay'),
+    modalCloseButton: document.querySelector('.close-button')
+};
 
-// function countStringInJSON(jsonData, searchStr) {
-//     // בדיקה אם יש נתונים, מערך keypresses ומחרוזת חיפוש
-//     if (!jsonData || !jsonData.keypresses || !Array.isArray(jsonData.keypresses) || !searchStr) return 0;
-    
-//     let count = 0;
-//     const lowerSearch = searchStr.toLowerCase();
-    
-//     // מעבר על כל האיברים במערך keypresses
-//     jsonData.keypresses.forEach(item => {
-//         if (item.key) {
-//             // המרה לאותיות קטנות
-//             const keyValue = item.key.toString().toLowerCase();
-//             // ספירת ההופעות במחרוזת זו
-//             count += keyValue.split(lowerSearch).length - 1;
-//         }
-//     });
-    
-//     return count;
-// }
-
-// פונקציה לספירת מחרוזת בתוך ערכי "key" בכל הקשות ב-JSON
+// פונקציות עזר
 function countStringInJSON(jsonData, searchStr) {
     if (!jsonData || !jsonData.keypresses || !Array.isArray(jsonData.keypresses) || !searchStr) return 0;
     
@@ -56,38 +34,39 @@ function countStringInJSON(jsonData, searchStr) {
     return count;
 }
 
-// פונקציה שמבצעת את הספירה עבור כל הימים עבור מחשב נתון
+function updateComputerName() {
+    if (ELEMENTS.computer && ELEMENTS.follower) {
+        ELEMENTS.follower.textContent = ELEMENTS.computer.value;
+    }
+}
+
+// פונקציות API
 async function fetchAndCountForComputer(computer, searchStr) {
     let totalCount = 0;
     try {
-        // קריאה לשרת לקבלת רשימת התיקיות/ימים עבור המחשב
-        const listUrl = `/${computer}`;
-        const listResponse = await fetch(listUrl);
+        // קריאה לשרת לקבלת רשימת התאריכים
+        const listResponse = await fetch(`${API_BASE_URL}/computers/${computer}`);
         if (!listResponse.ok) {
             throw new Error(`שגיאה בטעינת רשימת התאריכים עבור ${computer}`);
         }
-        const listData = await listResponse.json();
+        const dates = await listResponse.json();
         
-        // נניח שה-JSON מחזיר מערך תחת המפתח "days"
-        const days = listData.days;
-        if (!Array.isArray(days)) {
+        if (!Array.isArray(dates)) {
             throw new Error("המבנה של רשימת התאריכים לא תואם את הציפיות");
         }
         
-        // מעבר על כל יום וביצוע קריאה לנתונים של אותו יום
-        for (const day of days) {
-            const dayUrl = `/${computer}/${day}`;
+        // מעבר על כל תאריך וביצוע הספירה
+        for (const date of dates) {
             try {
-                const dayResponse = await fetch(dayUrl);
+                const dayResponse = await fetch(`${API_BASE_URL}/computers/${computer}/${date}`);
                 if (!dayResponse.ok) {
-                    console.error(`שגיאה בטעינת הנתונים עבור היום ${day}: ${dayResponse.status}`);
-                    continue; // ממשיכים ליום הבא
+                    console.error(`שגיאה בטעינת הנתונים עבור היום ${date}: ${dayResponse.status}`);
+                    continue;
                 }
                 const dayData = await dayResponse.json();
-                const count = countStringInJSON(dayData, searchStr);
-                totalCount += count;
+                totalCount += countStringInJSON(dayData, searchStr);
             } catch (dayError) {
-                console.error(`שגיאה בעיבוד הנתונים עבור היום ${day}:`, dayError);
+                console.error(`שגיאה בעיבוד הנתונים עבור היום ${date}:`, dayError);
             }
         }
     } catch (error) {
@@ -98,114 +77,108 @@ async function fetchAndCountForComputer(computer, searchStr) {
     return totalCount;
 }
 
-// דוגמה לשימוש
-async function myFunc() {
-    // קבלת הערכים מהאלמנטים (ודאו שה-IDs נכונים בהנב HTML)
-    const computerElem = document.getElementById("computer");
-    const searchElem = document.getElementById("inp");
-    const resultElem = document.getElementById("result");
+async function fetchDayData(computer, day) {
+    const response = await fetch(`${API_BASE_URL}/computers/${computer}/${day}`);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+}
 
-    if (!computerElem || !searchElem || !resultElem) {
+// פונקציות UI
+async function handleSearch() {
+    if (!ELEMENTS.computer || !ELEMENTS.searchInput || !ELEMENTS.result) {
         console.error("אחד מהאלמנטים לא נמצא");
         return;
     }
 
-    const computer = computerElem.value;
-    const searchStr = searchElem.value;
+    const computer = ELEMENTS.computer.value;
+    const searchStr = ELEMENTS.searchInput.value;
 
     try {
         const totalCount = await fetchAndCountForComputer(computer, searchStr);
-        resultElem.innerHTML = totalCount;
+        ELEMENTS.result.innerHTML = totalCount;
     } catch (error) {
-        resultElem.innerHTML = "שגיאה בטעינת הנתונים";
+        ELEMENTS.result.innerHTML = "שגיאה בטעינת הנתונים";
     }
 }
 
-
-function getName(){
-    document.getElementById("Follo").textContent = document.getElementById("computer").value;
-} 
-getName();
-
-document.getElementById("start").addEventListener('click', function() {
-    let btn = document.getElementById("text-start-button");
-    let circle = document.querySelector(".sircle-card");  // בחירת האלמנט של העיגול
-    let animation = document.getElementById("animation")
+function handleStartButtonClick() {
+    const { startButtonText, circle, animation } = ELEMENTS;
+    const isStarting = startButtonText.innerHTML === "start";
     
-    if (btn.innerHTML === "start") {
-        btn.innerHTML = "stop";
-        btn.style.color = "#ff3914";
-        animation.style.visibility = "visible"
+    // עדכון טקסט וצבע הכפתור
+    startButtonText.innerHTML = isStarting ? "stop" : "start";
+    startButtonText.style.color = isStarting ? "#ff3914" : "#39ff14";
+    
+    // עדכון נראות האנימציה
+    animation.style.visibility = isStarting ? "visible" : "hidden";
+    
+    // עדכון סגנון העיגול
+    const circleStyles = isStarting ? {
+        border: "1px solid #ff1414",
+        boxShadow: "0 0 10px #ff1414",
+        hoverShadow: "0 0 20px #ff1414, 0 0 40px #ff3914"
+    } : {
+        border: "1px solid var(--neon-blue)",
+        boxShadow: "0 0 10px var(--neon-blue)",
+        hoverShadow: "0 0 20px var(--neon-blue), 0 0 40px var(--neon-green)"
+    };
+    
+    // עדכון סגנונות
+    circle.style.border = circleStyles.border;
+    circle.style.boxShadow = circleStyles.boxShadow;
+    document.documentElement.style.setProperty('--shine-color', 
+        isStarting ? 'rgba(255, 20, 20, 0.2)' : 'rgba(0, 243, 255, 0.2)');
+    
+    // עדכון אירועי hover
+    circle.addEventListener('mouseenter', () => circle.style.boxShadow = circleStyles.hoverShadow);
+    circle.addEventListener('mouseleave', () => circle.style.boxShadow = circleStyles.boxShadow);
+}
 
-        circle.style.border = "1px solid #ff1414";
-        circle.style.boxShadow = "0 0 10px #ff1414";
-        
-        document.documentElement.style.setProperty('--shine-color', 'rgba(255, 20, 20, 0.2)');
-        
-        circle.addEventListener('mouseenter', function() {
-            this.style.boxShadow = "0 0 20px #ff1414, 0 0 40px #ff3914";
-        });
-        circle.addEventListener('mouseleave', function() {
-            this.style.boxShadow = "0 0 10px #ff1414";
-        });
-    } else {
-        
-        btn.innerHTML = "start";
-        btn.style.color = "#39ff14";
-        animation.style.visibility = "hidden"
-        circle.style.border = "1px solid var(--neon-blue)";
-        circle.style.boxShadow = "0 0 10px var(--neon-blue)";
-        
-        document.documentElement.style.setProperty('--shine-color', 'rgba(0, 243, 255, 0.2)');
-        
-        circle.addEventListener('mouseenter', function() {
-            this.style.boxShadow = "0 0 20px var(--neon-blue), 0 0 40px var(--neon-green)";
-        });
-        circle.addEventListener('mouseleave', function() {
-            this.style.boxShadow = "0 0 10px var(--neon-blue)";
-        });
+async function handleFormSubmit(event) {
+    event.preventDefault();
+    const computer = ELEMENTS.computer.value;
+    const day = ELEMENTS.date.value;
+    
+    updateComputerName();
+    
+    try {
+        const data = await fetchDayData(computer, day);
+        ELEMENTS.resultData.innerHTML = "<pre>" + JSON.stringify(data, null, 4) + "</pre>";
+    } catch (error) {
+        console.error('Error:', error);
     }
-});
+}
 
-function fetchDataFromForm(event) {
-    event.preventDefault(); // מונע רענון של הדף
-    const computer = document.getElementById("computer").value;
-    const day = document.getElementById("date").value;
-    getName();
-    fetch(`/${computer}/${day}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        document.getElementById("result-data").innerHTML =
-          "<pre>" + JSON.stringify(data, null, 4) + "</pre>";
-      })
-      .catch(error => console.error('Error:', error));
-  }
+// טיפול במודל
+function showModal() {
+    document.body.classList.add('modal-open');
+    ELEMENTS.modalBlock.classList.add('show');
+    ELEMENTS.modalOverlay.classList.add('show');
+    ELEMENTS.modalButton.style.display = 'none';
+}
 
-  const button = document.querySelector('.show-button');
-  const block = document.querySelector('.block');
-  const overlay = document.querySelector('.overlay');
-  const closeButton = document.querySelector('.close-button');
-  
-  button.addEventListener('click', () => {
-      document.body.classList.add('modal-open'); // מוסיף class לחסימת אינטראקציה
-      block.classList.add('show');
-      overlay.classList.add('show');
-      button.style.display = 'none';
-  });
+function hideModal() {
+    document.body.classList.remove('modal-open');
+    ELEMENTS.modalBlock.classList.remove('show');
+    ELEMENTS.modalOverlay.classList.remove('show');
+    ELEMENTS.modalButton.style.display = 'block';
+}
 
-  closeButton.addEventListener('click', () => {
-      document.body.classList.remove('modal-open'); // מסיר את החסימה
-      block.classList.remove('show');
-      overlay.classList.remove('show');
-      button.style.display = 'block';
-  });
+// הגדרת event listeners
+function initializeEventListeners() {
+    ELEMENTS.startButton?.addEventListener('click', handleStartButtonClick);
+    ELEMENTS.modalButton?.addEventListener('click', showModal);
+    ELEMENTS.modalCloseButton?.addEventListener('click', hideModal);
+    ELEMENTS.modalOverlay?.addEventListener('click', hideModal);
+}
 
-  // סגירת הבלוק בלחיצה על ה-overlay
-  overlay.addEventListener('click', () => {
-      closeButton.click();
-  });
+// אתחול
+function initialize() {
+    updateComputerName();
+    initializeEventListeners();
+}
+
+// הפעלת האתחול כשהדף נטען
+document.addEventListener('DOMContentLoaded', initialize);

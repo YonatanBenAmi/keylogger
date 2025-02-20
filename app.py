@@ -1,38 +1,68 @@
-from flask import Flask, jsonify, abort, render_template
+
+from flask import Flask, jsonify
+from flask_cors import CORS
 import os
 import json
 
 app = Flask(__name__)
+CORS(app)  
 
-BASE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+DATA_FOLDER = "data"
 
-@app.route('/<computer>', methods=['GET'])
-def get_computer_days(computer):
-    computer_path = os.path.join(BASE_PATH, computer)
-    if not os.path.exists(computer_path) or not os.path.isdir(computer_path):
-        abort(404, description="Computer not found")
+@app.route('/api/computers', methods=['GET'])
+def get_computers():
+    """מחזיר רשימה של כל המחשבים בתיקיית data"""
     try:
-        # מקבל את רשימת כל התיקיות (הימים) בתיקיית המחשב
-        days = [d for d in os.listdir(computer_path) if os.path.isdir(os.path.join(computer_path, d))]
+        computers = [name for name in os.listdir(DATA_FOLDER) 
+                    if os.path.isdir(os.path.join(DATA_FOLDER, name))]
+        return jsonify(computers)
     except Exception as e:
-        abort(500, description=f"Error reading computer directory: {e}")
-    return jsonify({"days": days})
+        return jsonify({"error": str(e)}), 500
 
-@app.route('/<computer>/<day>', methods=['GET'])
-def get_day_data(computer, day):
-    file_path = os.path.join(BASE_PATH, computer, day, 'data.json')
-    if not os.path.exists(file_path):
-        abort(404, description="Data not found")
+@app.route('/api/computers/<computer>', methods=['GET'])
+def get_computer_dates(computer):
+    """מחזיר רשימה של כל התאריכים עבור מחשב ספציפי"""
+    computer_path = os.path.join(DATA_FOLDER, computer)
+    
+    if not os.path.exists(computer_path):
+        return jsonify({"error": "Computer not found"}), 404
+        
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        dates = [name for name in os.listdir(computer_path) 
+                if os.path.isdir(os.path.join(computer_path, name))]
+        dates.sort()  # מסדר את התאריכים בסדר עולה
+        return jsonify(dates)
     except Exception as e:
-        abort(500, description=f"Error reading file: {e}")
-    return jsonify(data)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/computers/<computer>/<day>', methods=['GET'])
+def get_day_content(computer, day):
+    """מחזיר את תוכן קובץ ה-JSON של יום ספציפי"""
+    day_path = os.path.join(DATA_FOLDER, computer, day)
+    
+    if not os.path.exists(day_path):
+        return jsonify({"error": "Path not found"}), 404
+        
+    try:
+        # מחפש את קובץ ה-JSON בתיקייה
+        json_files = [f for f in os.listdir(day_path) if f.endswith('.json')]
+        
+        if not json_files:
+            return jsonify({"error": "No JSON file found in directory"}), 404
+            
+        # לוקח את קובץ ה-JSON הראשון
+        json_path = os.path.join(day_path, json_files[0])
+        
+        # קורא את תוכן קובץ ה-JSON
+        with open(json_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            return jsonify(data)
+            
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON file"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
