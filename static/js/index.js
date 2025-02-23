@@ -1,3 +1,4 @@
+
 // קבועים גלובליים
 const API_BASE_URL = 'http://127.0.0.1:5000/api';
 const ELEMENTS = {
@@ -19,7 +20,7 @@ const ELEMENTS = {
 
 // פונקציות עזר
 function countStringInJSON(jsonData, searchStr) {
-    if (!jsonData || !jsonData.keypresses || !Array.isArray(jsonData.keypresses) || !searchStr) return "Not found";
+    if (!jsonData || !jsonData.keypresses || !Array.isArray(jsonData.keypresses) || !searchStr) return 0;
     
     let count = 0;
     const lowerSearch = searchStr.toLowerCase();
@@ -41,10 +42,22 @@ function updateComputerName() {
 }
 
 // פונקציות API
+async function fetchComputers() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/computers`);
+        if (!response.ok) {
+            throw new Error('שגיאה בטעינת רשימת המחשבים');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('שגיאה בטעינת רשימת המחשבים:', error);
+        throw error;
+    }
+}
+
 async function fetchAndCountForComputer(computer, searchStr) {
     let totalCount = 0;
     try {
-        // קריאה לשרת לקבלת רשימת התאריכים
         const listResponse = await fetch(`${API_BASE_URL}/computers/${computer}`);
         if (!listResponse.ok) {
             throw new Error(`שגיאה בטעינת רשימת התאריכים עבור ${computer}`);
@@ -55,7 +68,6 @@ async function fetchAndCountForComputer(computer, searchStr) {
             throw new Error("המבנה של רשימת התאריכים לא תואם את הציפיות");
         }
         
-        // מעבר על כל תאריך וביצוע הספירה
         for (const date of dates) {
             try {
                 const dayResponse = await fetch(`${API_BASE_URL}/computers/${computer}/${date}`);
@@ -73,7 +85,6 @@ async function fetchAndCountForComputer(computer, searchStr) {
         console.error("שגיאה בטעינת רשימת התאריכים:", error);
         throw error;
     }
-    
     return totalCount;
 }
 
@@ -86,6 +97,35 @@ async function fetchDayData(computer, day) {
 }
 
 // פונקציות UI
+async function loadComputerOptions() {
+    try {
+        const computers = await fetchComputers();
+        const selectElement = ELEMENTS.computer;
+        
+        if (!selectElement) {
+            console.error('אלמנט ה-select לא נמצא');
+            return;
+        }
+
+        // ניקוי אופציות קיימות
+        selectElement.innerHTML = '';
+        
+        // הוספת האופציות החדשות
+        computers.forEach(computerName => {
+            const option = document.createElement('option');
+            option.value = computerName;
+            option.textContent = computerName;
+            option.className = 'cyber-text-glow';
+            selectElement.appendChild(option);
+        });
+
+        // עדכון שם המחשב הנבחר
+        updateComputerName();
+    } catch (error) {
+        console.error('שגיאה בטעינת אפשרויות המחשבים:', error);
+    }
+}
+
 async function handleSearch() {
     if (!ELEMENTS.computer || !ELEMENTS.searchInput || !ELEMENTS.result) {
         console.error("אחד מהאלמנטים לא נמצא");
@@ -107,14 +147,11 @@ function handleStartButtonClick() {
     const { startButtonText, circle, animation } = ELEMENTS;
     const isStarting = startButtonText.innerHTML === "start";
     
-    // עדכון טקסט וצבע הכפתור
     startButtonText.innerHTML = isStarting ? "stop" : "start";
     startButtonText.style.color = isStarting ? "#ff3914" : "#39ff14";
     
-    // עדכון נראות האנימציה
     animation.style.visibility = isStarting ? "visible" : "hidden";
     
-    // עדכון סגנון העיגול
     const circleStyles = isStarting ? {
         border: "1px solid #ff1414",
         boxShadow: "0 0 10px #ff1414",
@@ -125,13 +162,11 @@ function handleStartButtonClick() {
         hoverShadow: "0 0 20px var(--neon-blue), 0 0 40px var(--neon-green)"
     };
     
-    // עדכון סגנונות
     circle.style.border = circleStyles.border;
     circle.style.boxShadow = circleStyles.boxShadow;
     document.documentElement.style.setProperty('--shine-color', 
         isStarting ? 'rgba(255, 20, 20, 0.2)' : 'rgba(0, 243, 255, 0.2)');
     
-    // עדכון אירועי hover
     circle.addEventListener('mouseenter', () => circle.style.boxShadow = circleStyles.hoverShadow);
     circle.addEventListener('mouseleave', () => circle.style.boxShadow = circleStyles.boxShadow);
 }
@@ -175,8 +210,8 @@ function initializeEventListeners() {
 }
 
 // אתחול
-function initialize() {
-    updateComputerName();
+async function initialize() {
+    await loadComputerOptions();  // טעינת רשימת המחשבים
     initializeEventListeners();
 }
 

@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)  
 
 
-DATA_FOLDER = "data"
+DATA_FOLDER = "keylogger_data"
 
 @app.route('/api/computers', methods=['GET'])
 def get_computers():
