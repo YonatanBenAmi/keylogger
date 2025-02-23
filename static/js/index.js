@@ -19,7 +19,7 @@ const ELEMENTS = {
 
 // פונקציות עזר
 function countStringInJSON(jsonData, searchStr) {
-    if (!jsonData || !jsonData.keypresses || !Array.isArray(jsonData.keypresses) || !searchStr) return 0;
+    if (!jsonData || !jsonData.keypresses || !Array.isArray(jsonData.keypresses) || !searchStr) return "Not found";
     
     let count = 0;
     const lowerSearch = searchStr.toLowerCase();
