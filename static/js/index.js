@@ -1,3 +1,37 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const mainContent = document.querySelector('.main-content');
+    mainContent.style.visibility = 'hidden';
+    mainContent.style.opacity = '0';
+
+    const path = document.querySelector("#animated-svg path");
+
+    if (path) {
+        gsap.set(path, { strokeDasharray: 2000, strokeDashoffset: 2000 });
+
+        gsap.to(path, {
+            strokeDashoffset: 0,
+            duration: 6, // האטנו ל-6 שניות
+            ease: "power1.inOut"
+        });
+
+        gsap.fromTo(".logo-name", 
+            { y: 50, opacity: 0 },
+            { y: 0, opacity: 1, duration: 2, delay: 0 } // יופיע אחרי חצי מהציור
+        );
+
+        gsap.to(".loading-page", {
+            opacity: 0,
+            duration: 1.5,
+            delay: 3, // הדף יוצג אחרי - שניות (נותן יותר זמן)
+            onComplete: () => {
+                document.querySelector('.loading-page').style.display = 'none';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '1';
+            }
+        });
+    }
+});
+
 
 // קבועים גלובליים
 const API_BASE_URL = 'http://127.0.0.1:5000/api';

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Keylogger</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -14,58 +14,87 @@
 </head>
 
 <body>
-  <div class="container">
-    <div class="overlay"></div>
-    <div>
-      <h1 class="rubik-iso-regular">KEYLOGGER</h1>
-      <div id="animation" style="width: 50px;">
-        <img src="/static/svg/animation.svg" alt="">
+
+  <div class="loading-page">
+    <div id="svg-container">
+      <!-- כאן נטמיע את ה-SVG -->
+      <svg id="animated-svg" width="170px" height="170px" viewBox="-6.4 -6.4 76.80 76.80"
+        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--emojione-monotone" preserveAspectRatio="xMidYMid meet" fill="none" stroke="#39ff14"
+        stroke-width="1">
+
+        <path
+          d="M32 2C15.432 2 2 15.432 2 32s13.432 30 30 30s30-13.432 30-30S48.568 2 32 2m6.016 44.508l-8.939-12.666l-2.922 2.961v9.705h-5.963V17.492h5.963v11.955l11.211-11.955h7.836L33.293 29.426l12.518 17.082h-7.795"
+          stroke-dasharray="2000" stroke-dashoffset="2000" />
+      </svg>
+
+
+    </div>
+
+    <div class="name-container">
+      <div class="logo-name rubik-iso-regular">KEYLOGGER</div>
+    </div>
+  </div>
+
+
+  <div class="main-content">
+    <div class="container">
+
+      <div class="overlay"></div>
+      <div>
+        <h1 class="rubik-iso-regular">KEYLOGGER</h1>
+        <div id="animation" style="width: 50px;">
+          <img src="/static/svg/animation.svg" alt="">
+        </div>
+      </div>
+      <div class="cyber-card cyber-border flex">
+        <div class="search-card">
+          <input id="inp" class="input-search" name="search" placeholder="Type your text" />
+        </div>
+        <button id="btn" onclick="handleSearch()" class="cyber-button">search</button>
+      </div>
+
+      <div id="result-data" class="block cyber-card cyber-border">
+        <button class="close-button" onclick="hideModal()">×</button>
+        <div class="content"></div>
+      </div>
+      <div class="flex">
+        <div class="cyber-card cyber-border half">
+          <h1>result</h1>
+          <h1 id="result"></h1>
+        </div>
+        <div class="cyber-card cyber-border half">
+          <h1 class="Following">Tracking</h1>
+          <h1 id="Follo" class="Following"></h1>
+        </div>
       </div>
     </div>
-    <div class="cyber-card cyber-border flex">
-      <div class="search-card">
-        <input id="inp" class="input-search" name="search" placeholder="Type your text" />
-      </div>
-      <button id="btn" onclick="handleSearch()" class="cyber-button">search</button>
-    </div>
-    
-    <div id="result-data" class="block cyber-card cyber-border">
-      <button class="close-button" onclick="hideModal()">×</button>
-      <div class="content"></div>
-    </div>
+
     <div class="flex">
-      <div class="cyber-card cyber-border half">
-        <h1>result</h1>
-        <h1 id="result"></h1>
-      </div>
-      <div class="cyber-card cyber-border half">
-        <h1 class="Following">Tracking</h1>
-        <h1 id="Follo" class="Following"></h1>
+      <form class="selection cyber-card cyber-border flex" action="" onsubmit="handleFormSubmit(event)">
+        <div>
+          <label>בחר מחשב:</label>
+          <select class="selection flex" id="computer"></select>
+        </div>
+        <div>
+          <label>בחר תאריך:</label>
+          <input type="date" id="date">
+        </div>
+
+        <button type="submit" class="show-button" onclick="showModal()">טען נתונים</button>
+      </form>
+
+      <div id="stop-btn" class="flex center">
+        <button id="start" class="sircle-card flex center">
+          <h1 id="text-start-button">start</h1>
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="flex">
-    <form class="selection cyber-card cyber-border flex" action="" onsubmit="handleFormSubmit(event)">
-      <div>
-        <label>בחר מחשב:</label>
-        <select class="selection flex" id="computer"></select>
-      </div>
-      <div>
-        <label>בחר תאריך:</label>
-        <input type="date" id="date">
-      </div>
-      
-      <button type="submit"  class="show-button" onclick="showModal()">טען נתונים</button>
-    </form>
 
-    <div id="stop-btn" class="flex center">
-      <button id="start" class="sircle-card flex center">
-        <h1 id="text-start-button">start</h1>
-      </button>
-    </div>
-  </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
   <script src="/static/js/index.js"></script>
 </body>
 

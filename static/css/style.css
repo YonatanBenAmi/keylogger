@@ -1,3 +1,73 @@
+.loading-page {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 243, 255, 0.03) 0px,
+        rgba(0, 243, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+    ); 
+    z-index: 9999;
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+#svg-container svg {
+    height: 150px;
+    width: 150px;
+}
+
+#animated-svg path {
+  stroke: #39ff14;
+  stroke-width: 1.5px; /* קו דק מאוד */
+  fill: none;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: drawSVG 5s ease-in-out forwards; /* יותר לאט */
+}
+
+@keyframes drawSVG {
+  to {
+      stroke-dashoffset: 0;
+  }
+}
+
+
+
+.name-container {
+    height: 50px;
+    overflow: hidden;
+}
+
+.logo-name {
+    font-size: 3rem;
+    font-weight: normal;
+    letter-spacing: 3px;
+    margin-left: 20px;
+    font-family: 'Michroma', sans-serif;
+    transform: translateY(50px);
+    opacity: 0;
+}
+
+.main-content {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.main-content.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
 ::-webkit-scrollbar {
   display: none;
 }

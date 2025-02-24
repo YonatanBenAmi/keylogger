@@ -7,7 +7,7 @@ import json
 app = Flask(__name__)
 CORS(app)  
 
-
+print("server started")
 DATA_FOLDER = "keylogger_data"
 
 @app.route('/api/computers', methods=['GET'])
